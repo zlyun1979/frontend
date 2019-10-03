@@ -7,3 +7,11 @@ before_install:
 
 script:
   - docker run -e CI=true zlyun1979/frontend npm run test
+
+after_success:
+  - docker build -t zlyun1979/frontend .
+
+  #login to docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  #push image to docker hub
+  - docker push zlyun1979/frontend
