@@ -2,22 +2,40 @@ sudo: required
 services:
   - docker
 
-before_install:
-  - docker build -t zlyun1979/frontend -f Dockerfile.dev .
+env:
+  global:
+    - SHA=$(git rev-parse HEAD)
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 
+before_install:
+  #for travis CI decrypt servie-account.json
   - openssl aes-256-cbc -K $encrypted_0c35eebf403c_key -iv $encrypted_0c35eebf403c_iv -in service-account.json.enc -out service-account.json -d
+  #install google CLI
   - curl https://sdk.cloud.google.com | bash > /dev/null;
   - source $HOME/google-cloud-sdk/path.bash.inc
   - gcloud components update kubectl
   - gcloud auth activate-service-account --key-file service-account.json
+  #config cluster on GCLOUD
+  - gcloud config set project manifest-emblem-253519
+  - gcloud config set compute/zone us-east1-b
+  - gcloud container clusters get-credentials myone
 
+  - docker build -t zlyun1979/frontend -f Dockerfile.dev .
+ 
 script:
   - docker run -e CI=true zlyun1979/frontend npm run test
 
 after_success:
-  - docker build -t zlyun1979/frontend .
+  - docker build -t zlyun1979/frontend:latest -t zlyun1979/frontend:$SHA .
 
   #login to docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   #push image to docker hub
-  - docker push zlyun1979/frontend
+  - docker push zlyun1979/frontend:latest
+  - docker push zlyun1979/frontend:$SHA
+
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
