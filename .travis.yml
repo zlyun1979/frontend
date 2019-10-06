@@ -19,20 +19,13 @@ before_install:
   - gcloud config set project manifest-emblem-253519
   - gcloud config set compute/zone us-east1-b
   - gcloud container clusters get-credentials myone
-
+  #login docker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker build -t zlyun1979/frontend -f Dockerfile.dev .
  
 script:
   - docker run -e CI=true zlyun1979/frontend npm run test
 
-after_success:
-  - docker build -t zlyun1979/frontend:latest -t zlyun1979/frontend:$SHA .
-
-  #login to docker CLI
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  #push image to docker hub
-  - docker push zlyun1979/frontend:latest
-  - docker push zlyun1979/frontend:$SHA
 
 deploy:
   provider: script
