@@ -12,7 +12,3 @@ spec:
           backend:
             serviceName: frontend-ip-service
             servicePort: 3000
-        - paths: /api/
-          backend:
-            serviceName: frontend-ip-service
-            servicePort: 3000
