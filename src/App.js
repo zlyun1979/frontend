@@ -10,6 +10,9 @@ function App() {
         <p>
         How are you!One more time. ! Kellen Sun is 5 years old.
         How are you!One more time. ! Kellen Sun is 5 years old.
+        How are you!One more time. ! Kellen Sun is 5 years old.
+        How are you!One more time. ! Kellen Sun is 5 years old.
+        How are you!One more time. ! Kellen Sun is 5 years old.
         </p>
         <a
           className="App-link"
